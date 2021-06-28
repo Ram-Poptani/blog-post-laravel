@@ -3,7 +3,6 @@
 
 namespace App\DTO;
 
-use Illuminate\Database\Eloquent\Collection;
 
 class CategoryDto
 {
@@ -18,6 +17,13 @@ class CategoryDto
     ) {
         $this->id = $id;
         $this->name = $name;
+    }
+
+    public function toArray()
+    {
+        return [
+            'name' => $this->name
+        ];
     }
 }
 

@@ -3,12 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\DTO\CategoryDto;
 use App\Http\Requests\Categories\CreateCategoryRequest;
 use App\Http\Requests\Categories\UpdateCategoryRequest;
+use App\Services\CategoryService;
+use Exception;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
 {
+
+    private CategoryService $categoryService;
+
+
+    public function __construct(CategoryService $ref)
+    {
+
+        $this->categoryService = $ref;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -40,12 +54,20 @@ class CategoriesController extends Controller
      */
     public function store(CreateCategoryRequest $request)
     {
-        Category::create([
-            'name'=>$request->name
-        ]);
 
-        session()->flash('success', 'Category Added Successfully!');
+        $categoryDto = new CategoryDto(null, $request->name);
+
+        try {
+            $this->categoryService->create($categoryDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while adding Category :/');
+            return redirect(route('categories.index'));    
+        }
+
+        session()->flash('success', 'Category Created Successfully');
+        //redirect
         return redirect(route('categories.index'));
+
     }
 
     /**
