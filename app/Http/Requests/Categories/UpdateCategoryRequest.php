@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Categories;
 
+use App\Category;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCategoryRequest extends FormRequest
@@ -28,8 +29,6 @@ class UpdateCategoryRequest extends FormRequest
 // but if your route has something else such as /student/{student}/subscription/create where we are creating subscription
 // but route has student object with it then u can access $this->student
 
-        return [
-            'name' => 'required|unique:categories,name,'.$this->category->id
-        ];
+        return Category::getUpdateValidationRules();
     }
 }

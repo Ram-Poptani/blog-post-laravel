@@ -2,13 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\TagDto;
 use App\Http\Requests\Tags\CreateTagRequest;
 use App\Http\Requests\Tags\UpdateTagRequest;
+use App\Services\TagService;
 use App\Tag;
+use Exception;
 use Illuminate\Http\Request;
 
 class TagsController extends Controller
 {
+
+    private TagService $tagService;
+
+
+    public function __construct(TagService $ref)
+    {
+
+        $this->tagService = $ref;
+    }
+
+
     public function index()
     {
         $tags = Tag::all();
@@ -25,12 +39,28 @@ class TagsController extends Controller
 
     public function store(CreateTagRequest $request)
     {
-        Tag::create([
-            'name'=>$request->name
-        ]);
 
-        session()->flash('success', 'Tag Added Successfully!');
+        $tagDto = new TagDto(null, $request->name);
+
+        try {
+            $this->tagService->create($tagDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while adding Tag :/');
+            // session()->flash('error', $e->getMessage());
+            return redirect(route('tags.index'));    
+        }
+
+        session()->flash('success', 'Tag Created Successfully');
+        //redirect
         return redirect(route('tags.index'));
+
+
+        // Tag::create([
+        //     'name'=>$request->name
+        // ]);
+
+        // session()->flash('success', 'Tag Added Successfully!');
+        // return redirect(route('tags.index'));
     }
 
     public function destroy(Tag $tag)
@@ -55,10 +85,28 @@ class TagsController extends Controller
     public function update(UpdateTagRequest $request, Tag $tag)
     {
         // dd($tag);
-        $tag->name = $request->name;
-        $tag->save();
 
-        session()->flash('success', 'Tag Updated Successfully!');
+
+        $tagDto = new TagDto($tag->id, $request->name);
+
+
+
+        try {
+            $this->tagService->update($tagDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while updating Tag :/');
+            return redirect(route('tags.index'));    
+        }
+
+        session()->flash('success', 'Tag Updated Successfully');
+        //redirect
         return redirect(route('tags.index'));
+
+
+        // $tag->name = $request->name;
+        // $tag->save();
+
+        // session()->flash('success', 'Tag Updated Successfully!');
+        // return redirect(route('tags.index'));
     }
 }

@@ -45,10 +45,37 @@ class Tag extends Model implements TagConstants
     }
 
 
+    public static function updateTag(TagDto $tagDto)
+    {
+        
+        $rules = self::UPDATE_RULES;
+        $rules['name'] = $rules['name'].$tagDto->id;
+
+        Utils::validateOrThrow(
+            $rules, 
+            $tagDto->toArray()
+        );
+
+
+        $tag = null;
+        DB::transaction(function() use($tagDto, &$tag) {
+            $tag = Tag::findOrFail($tagDto->id);
+            $tag->name = $tagDto->name;
+            $tag->save();
+        });
+        return $tag;
+    }
+
+
 
     public static function getCreateValidationRules()
     {
         return self::CREATE_RULES;
+    }
+    
+    public static function getUpdateValidationRules()
+    {
+        return self::UPDATE_RULES;
     }
 
 

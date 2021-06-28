@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tags;
 
+use App\Tag;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTagRequest extends FormRequest
@@ -23,8 +24,6 @@ class UpdateTagRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name' => 'required|unique:tags,name,'.$this->tag->id
-        ];
+        return Tag::getUpdateValidationRules();
     }
 }

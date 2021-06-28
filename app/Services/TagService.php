@@ -14,6 +14,12 @@ class TagService
         // Wanna derrive some more attributes? You can derrive'em here...
 
 
-        Tag::persistPost($tagDto);
+        Tag::persistTag($tagDto);
+    }
+
+
+    public function update(TagDto $tagDto)
+    {
+        Tag::updateTag($tagDto);
     }
 }
