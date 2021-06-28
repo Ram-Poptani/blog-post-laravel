@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Categories;
 
+use App\Category;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateCategoryRequest extends FormRequest
@@ -23,8 +24,6 @@ class CreateCategoryRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'=>'required|unique:categories'
-        ];
+        return Category::getCreateValidationRules();
     }
 }

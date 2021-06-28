@@ -19,6 +19,11 @@ class TagDto
         $this->id = $id;
         $this->name = $name;
     }
+
+    public function toArray()
+    {
+        return ['name' => $this->name];
+    }
 }
 
 

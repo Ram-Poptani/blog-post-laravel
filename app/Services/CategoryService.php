@@ -16,6 +16,6 @@ class CategoryService
         // dd($categoryDto->toArray());
 
 
-        Category::persistPost($categoryDto);
+        Category::persistCategory($categoryDto);
     }
 }

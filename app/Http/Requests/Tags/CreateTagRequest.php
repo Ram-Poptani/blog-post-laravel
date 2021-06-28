@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tags;
 
+use App\Tag;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTagRequest extends FormRequest
@@ -23,8 +24,6 @@ class CreateTagRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'=>'required|unique:tags'
-        ];
+        return Tag::getCreateValidationRules();
     }
 }

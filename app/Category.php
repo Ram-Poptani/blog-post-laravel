@@ -22,7 +22,7 @@ class Category extends Model implements CategoryConstants
      */
 
 
-    public static function persistPost(CategoryDto $categoryDto):self
+    public static function persistCategory(CategoryDto $categoryDto):self
     {
 
         // 1. Validate
@@ -45,6 +45,12 @@ class Category extends Model implements CategoryConstants
 
 
 
+    }
+
+
+    public static function getCreateValidationRules()
+    {
+        return self::CREATE_RULES;
     }
     
 }
