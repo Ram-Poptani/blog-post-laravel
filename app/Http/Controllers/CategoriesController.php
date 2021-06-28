@@ -103,11 +103,27 @@ class CategoriesController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category->name = $request->name;
-        $category->save();
 
-        session()->flash('success', 'Category Updated Successfully!');
+        $categoryDto = new CategoryDto($category->id, $request->name);
+
+
+
+        try {
+            $this->categoryService->update($categoryDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while updating Category :/');
+            return redirect(route('categories.index'));    
+        }
+
+        session()->flash('success', 'Category Updated Successfully');
+        //redirect
         return redirect(route('categories.index'));
+
+        // $category->name = $request->name;
+        // $category->save();
+
+        // session()->flash('success', 'Category Updated Successfully!');
+        // return redirect(route('categories.index'));
     }
 
     /**

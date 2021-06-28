@@ -46,11 +46,41 @@ class Category extends Model implements CategoryConstants
 
 
     }
+    
+
+
+    public static function updateCategory(CategoryDto $categoryDto)
+    {
+        
+        $rules = self::UPDATE_RULES;
+        $rules['name'] = $rules['name'].$categoryDto->id;
+
+        Utils::validateOrThrow(
+            $rules, 
+            $categoryDto->toArray()
+        );
+
+
+        $category = null;
+        DB::transaction(function() use($categoryDto, &$category) {
+            $category = Category::findOrFail($categoryDto->id);
+            $category->name = $categoryDto->name;
+            $category->save();
+        });
+        return $category;
+    }
+
+
 
 
     public static function getCreateValidationRules()
     {
         return self::CREATE_RULES;
+    }
+
+    public static function getUpdateValidationRules()
+    {
+        return self::UPDATE_RULES;
     }
     
 }

@@ -18,4 +18,12 @@ class CategoryService
 
         Category::persistCategory($categoryDto);
     }
+
+
+
+    public function update(CategoryDto $categoryDto)
+    {
+        Category::updateCategory($categoryDto);
+    }
+
 }
