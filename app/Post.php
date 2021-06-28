@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\DTO\PostDto;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
@@ -75,5 +76,27 @@ class Post extends Model
         }
         return $query;
     }
+
+
+
+
+    /**
+     * Persisting a Post using DTO
+     */
+
+    public static function persistPost(PostDto $postDto)
+    {
+        // 1. Validate
+        // Validate the data here
+
+        
+        // 2. Create
+
+
+
+
+    }
+
+
 
 }

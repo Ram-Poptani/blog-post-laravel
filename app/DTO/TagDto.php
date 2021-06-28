@@ -9,18 +9,15 @@ class TagDto
 {
     public ?int $id;
     public string $name;
-    public Collection $postDtoCollection;
 
 
     
     public function __construct(
-        int $id,
-        string $name,
-        Collection $postDtoCollection
+        ?int $id,
+        string $name
     ) {
         $this->id = $id;
         $this->name = $name;
-        $this->postDtoCollection = $postDtoCollection;
     }
 }
 

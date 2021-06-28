@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\DTO\CategoryDto;
+use App\DTO\PostDto;
+use App\DTO\TagDto;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Post;
+use App\Services\PostService;
 use App\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class PostsController extends Controller
 {
 
-    public function __construct()
+    private PostService $postService;
+
+
+    public function __construct(PostService $ref)
     {
+
+        $this->postService = $ref;
+
+
         $this->middleware([
             'verifyCategoriesCount',
         ])->only('create', 'store');
@@ -61,8 +73,43 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+
+
+
+    public function store1(Request $request)
+    {
+        
+        $image = $request->file('image')->store('posts');
+
+        $tagDtoCollection = collect();
+        
+        foreach ($request->tags as $tag) {
+            $tagDto = new TagDto($tag, Tag::findOrFail($tag)->name);
+            $tagDtoCollection->push($tagDto);
+        }
+
+
+        $category_id = $request->get('category_id');
+        $category = Category::findOrFail($category_id);
+        $categoryDto = new CategoryDto($category_id, $category->name);
+
+        $postDto = new PostDto(null, auth()->user()->id, $request->get('title'), $request->get('excerpt'), $request->get('content'), $image, $categoryDto, $tagDtoCollection, new Date());
+
+        $this->postService->create($postDto);
+
+    }
+    
+
+
+
     public function store(Request $request)
     {
+
+        dd(
+            auth()->user()->id
+        );
+
         //Image Upload and stores the name of the image
         $image = $request->file('image')->store('posts');
         // run command: php artisan storage:link
