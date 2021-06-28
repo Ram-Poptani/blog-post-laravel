@@ -6,10 +6,12 @@ use App\Category;
 use App\DTO\CategoryDto;
 use App\DTO\PostDto;
 use App\DTO\TagDto;
+use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Post;
 use App\Services\PostService;
 use App\Tag;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 
@@ -41,10 +43,10 @@ class PostsController extends Controller
     public function index()
     {
         if (!auth()->user()->isAdmin()) {
-            $posts = Post::withoutTrashed()->where('user_id', auth()->id())->paginate(10);
+            $posts = Post::withoutTrashed()->where('user_id', auth()->id())->paginate(5);
             // $posts = Post::withoutTrashed()->where('user_id', auth()->user()->id)->paginate(10);
         }else {
-            $posts = Post::paginate(10);
+            $posts = Post::paginate(5);
         }        
         
         return view('posts.index', compact([
@@ -77,14 +79,13 @@ class PostsController extends Controller
 
 
 
-    public function store1(Request $request)
+    public function store(CreatePostRequest $request)
     {
         
         $image = $request->file('image')->store('posts');
 
         $tagDtoCollection = collect();
-        
-        foreach ($request->tags as $tag) {
+        foreach ($request->get('tags') as $tag) {
             $tagDto = new TagDto($tag, Tag::findOrFail($tag)->name);
             $tagDtoCollection->push($tagDto);
         }
@@ -94,20 +95,43 @@ class PostsController extends Controller
         $category = Category::findOrFail($category_id);
         $categoryDto = new CategoryDto($category_id, $category->name);
 
-        $postDto = new PostDto(null, auth()->user()->id, $request->get('title'), $request->get('excerpt'), $request->get('content'), $image, $categoryDto, $tagDtoCollection, new Date());
+        $postDto = new PostDto(
+            null,
+            auth()->user()->id,
+            $request->get('title'),
+            $request->get('excerpt'),
+            $request->get('content'),
+            $image,
+            $categoryDto,
+            $tagDtoCollection,
+            $request->get('published_at')??now()
+        );
 
-        $this->postService->create($postDto);
+        try {
+            $this->postService->create($postDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while adding Post :/');
+            return redirect(route('posts.index'));    
+        }
+
+        session()->flash('success', 'Post Created Successfully');
+        //redirect
+        return redirect(route('posts.index'));
 
     }
     
 
 
 
-    public function store(Request $request)
+    /*
+
+    OLD STORE FUNCTION
+    
+    public function store1(Request $request)
     {
 
         dd(
-            auth()->user()->id
+            $request->get('tags')
         );
 
         //Image Upload and stores the name of the image
@@ -132,6 +156,8 @@ class PostsController extends Controller
         //redirect
         return redirect(route('posts.index'));
     }
+    
+    */
 
     /**
      * Display the specified resource.

@@ -31,7 +31,7 @@
 
                 <div class="form-group">
                     <label for="tags">Tags</label>
-                    <select name="tags[]" id="tags" class="form-control" multiple>
+                    <select name="tags[]" id="tags" class="form-control @error('excerpt') is-invalid @enderror" multiple>
                         @foreach($tags as $tag)
 
                         <option value="{{$tag->id}}">{{$tag->name}}</option>
@@ -53,7 +53,7 @@
                 <div class="form-group">
                     <label for="content">Content</label>
                     <input type="hidden" id="content" name="content" value="{{old('content')}}">
-                    <trix-editor input="content"></trix-editor>
+                    <trix-editor class="@error('content') is-invalid @enderror" input="content"></trix-editor>
                     @error('content')
                     <p class="text-danger font-weight-light">{{$message}}</p>
                     @enderror
@@ -62,8 +62,11 @@
                     <label for="published_at">Published At</label>
                     <input type="date" 
                         value="{{ old('published_at') }}"
-                        class="form-control"
+                        class="form-control @error('excerpt') is-invalid @enderror"
                         name="published_at" id="published_at">
+                    @error('published_at')
+                        <p class="text-danger"> {{ $message }}</p>
+                    @enderror    
                 </div>
 
                 <div class="form-group">

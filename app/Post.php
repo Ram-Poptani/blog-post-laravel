@@ -3,11 +3,15 @@
 namespace App;
 
 use App\DTO\PostDto;
+use App\Helpers\Utils;
+use App\Interfaces\PostConstants;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class Post extends Model
+class Post extends Model implements PostConstants
 {
     use SoftDeletes;
 
@@ -84,19 +88,60 @@ class Post extends Model
      * Persisting a Post using DTO
      */
 
-    public static function persistPost(PostDto $postDto)
+    public static function persistPost(PostDto $postDto):self
     {
+
+        // dd($postDto->toArray());
+
         // 1. Validate
         // Validate the data here
+        Utils::validateOrThrow(
+            array_diff_key(
+                self::CREATE_RULES, 
+                [
+                    'image' => '',
+                    'tags' => ''
+                ]
+            ), 
+            array_diff_key(
+                $postDto->toArray(), 
+                [
+                    'tag_ids' => '', 
+                    'user_id' => '', 
+                    'image' => ''
+                ]
+            )
+        );
+        
 
         
         // 2. Create
+        $post = null;
+        DB::transaction(function () use($postDto, &$post) {
 
+            // dd($postDto->toArray());
+
+            $post = Post::create(array_diff_key($postDto->toArray(), ['tag_ids' => '']));
+            $post->tags()->attach($postDto->toArray()['tag_ids']);
+
+        });
+        // dd($post);
+        return $post;
 
 
 
     }
 
+
+
+
+
+
+
+    public static function getCreateValidationRules()
+    {
+        return self::CREATE_RULES;
+    }
 
 
 }

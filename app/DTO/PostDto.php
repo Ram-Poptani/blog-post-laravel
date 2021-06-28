@@ -3,8 +3,8 @@
 
 namespace App\DTO;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Collection;
+
 
 class PostDto
 {
@@ -14,7 +14,7 @@ class PostDto
     public string $excerpt;
     public string $content;
     public string $image;
-    public Date $published_at;
+    public string $published_at;
     public Collection $tagDtoCollection;
     public CategoryDto $categoryDto;
 
@@ -29,7 +29,7 @@ class PostDto
         string $image,
         CategoryDto $categoryDto,
         Collection $tagDtoCollection,
-        Date $published_at
+        string $published_at
     ) {
         $this->id = $id;
         $this->user_id = $user_id;
@@ -45,19 +45,23 @@ class PostDto
 
     public function toArray() :array
     {
-        $tags = [];
+
+        $tag_ids = [];
         foreach ($this->tagDtoCollection as $tagDto) {
-            $tags[] = $tagDto->toArray();
+            $tag_ids[] = $tagDto->id;
         }
 
+
         return [
+            'user_id' => $this->user_id,
             'title' => $this->title,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'image' => $this->image,
-            'category' => $this->category,
+            'category_id' => $this->categoryDto->id,
             'published_at' => $this->published_at,
-            'tags' => $tags,
+            'tag_ids' => $tag_ids,
+
         ];
     }
 

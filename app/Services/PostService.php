@@ -13,6 +13,8 @@ class PostService
 
         // Wanna derrive some more attributes? You can derrive'em here...
 
+        // dd($postDto->toArray());
+
 
         Post::persistPost($postDto);   
     }
