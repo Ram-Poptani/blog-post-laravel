@@ -21,6 +21,7 @@ interface PostConstants
         'excerpt'=>'required|max:255',
         'content'=>'required',
         'image'=>'image|mimes:jpeg,png,gif,svg,jpg|max:1024',
-        'category_id'=>'exists:categories,id'
+        'category_id'=>'exists:categories,id',
+        'tags' => 'required',
     ];
 }

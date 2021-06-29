@@ -133,6 +133,77 @@ class Post extends Model implements PostConstants
     }
 
 
+    public static function updatePost(PostDto $postDto):self
+    {
+
+        // dd(
+        //     array_diff_key(
+        //         $postDto->toArray(), 
+        //         [
+        //             'tag_ids' => '', 
+        //             'user_id' => '', 
+        //             'image' => ''
+        //         ]
+        //     )
+        // );
+
+
+        // 1. Validate
+        // Validate the data here
+        Utils::validateOrThrow(
+            array_diff_key(
+                self::UPDATE_RULES, 
+                [
+                    'image' => '',
+                    'tags' => ''
+                ]
+            ), 
+            array_diff_key(
+                $postDto->toArray(), 
+                [
+                    'tag_ids' => '', 
+                    'user_id' => '', 
+                    'image' => '',
+                    'published_at' => '',
+                ]
+            )
+        );
+        
+
+        
+        // 2. Update
+        $post = null;
+        DB::transaction(function () use($postDto, &$post) {
+            
+            // dd(
+            //     array_diff_key(
+            //         $postDto->toArray(),
+            //         [
+            //             'user_id' => '',
+            //             'tag_ids' => '',       
+            //         ]
+            //     )
+            // );
+
+            $post = Post::findOrFail($postDto->id);
+            $post->update(
+                array_diff_key(
+                    $postDto->toArray(),
+                    [
+                        'user_id' => '',
+                        'tag_ids' => '',
+                    ]
+                )
+            );
+            $post->tags()->sync($postDto->toArray()['tag_ids']);
+            
+
+        });
+        // dd($post);
+        return $post;
+
+
+    }
 
 
 

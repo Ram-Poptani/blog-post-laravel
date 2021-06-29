@@ -191,7 +191,64 @@ class PostsController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
+
+
+
     public function update(UpdatePostRequest $request, Post $post)
+    {
+        // dd($request->all());
+
+
+        $tagDtoCollection = collect();
+        foreach ($request->get('tags') as $tag) {
+            $tagDto = new TagDto($tag, Tag::findOrFail($tag)->name);
+            $tagDtoCollection->push($tagDto);
+        }
+
+
+        $category_id = $request->get('category_id');
+        $category = Category::findOrFail($category_id);
+        $categoryDto = new CategoryDto($category_id, $category->name);
+
+
+
+        $postDto = new PostDto(
+            $post->id,
+            auth()->user()->id,
+            $request->title,
+            $request->excerpt,
+            $request->content,
+            $post->image,
+            $categoryDto,
+            $tagDtoCollection,
+            $request->published_at
+        );
+
+        if($request->hasFile('image')){
+            // dd('image is gonna update!!');
+            $postDto = $this->postService->updateImage($postDto, $request->image);
+        }
+
+
+        try {
+            $this->postService->update($postDto);
+        }catch(Exception $e) {
+            session()->flash('error', 'Errr, Some error while updating Post :/');
+            // session()->flash('error', $e->getMessage());
+            return redirect(route('posts.index'));    
+        }
+
+        session()->flash('success', 'Post Updated Successfully');
+        //redirect
+        return redirect(route('posts.index'));
+
+
+    }
+
+
+
+
+    public function update1(UpdatePostRequest $request, Post $post)
     {
         $data = request()->only(['title', 'excerpt', 'content', 'published_at', 'category_id']);
         if($request->hasFile('image')){

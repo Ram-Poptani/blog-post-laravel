@@ -13,6 +13,8 @@ class Utils
     {
         $validator = Validator::make($data, $validationRules);
         
+        // dd($validator->fails());
+
         throw_if($validator->fails(), ValidationException::withMessages($validator->getMessageBag()->toArray()));
         // dd('hello');
         return $validator->validated();
