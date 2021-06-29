@@ -43,12 +43,15 @@ class PostsController extends Controller
     public function index()
     {
         if (!auth()->user()->isAdmin()) {
-            $posts = Post::withoutTrashed()->where('user_id', auth()->id())->paginate(5);
-            // $posts = Post::withoutTrashed()->where('user_id', auth()->user()->id)->paginate(10);
+            $posts = $this->postService->currentUserPosts(false)->paginate(5);
         }else {
-            $posts = Post::paginate(5);
-        }        
+            $posts = $this->postService->getPosts()->paginate(5);
+        }
         
+        // $postDtoCollection = $this->postService->makeDtoCollection($posts);
+
+        // $posts = $postDtoCollection;
+
         return view('posts.index', compact([
             'posts'
         ]));
