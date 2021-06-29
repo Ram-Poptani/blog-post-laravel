@@ -248,7 +248,11 @@ class PostsController extends Controller
 
 
 
-    public function update1(UpdatePostRequest $request, Post $post)
+    /*
+
+    OLD UPDATE FUNCTION
+
+    public function update(UpdatePostRequest $request, Post $post)
     {
         $data = request()->only(['title', 'excerpt', 'content', 'published_at', 'category_id']);
         if($request->hasFile('image')){
@@ -263,6 +267,8 @@ class PostsController extends Controller
         session()->flash('success', 'Post Updated Successfully!');
         return redirect(route('posts.index'));
     }
+
+    */
 
     /**
      * Remove the specified resource from storage.

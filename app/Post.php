@@ -136,6 +136,10 @@ class Post extends Model implements PostConstants
     public static function updatePost(PostDto $postDto):self
     {
 
+        $rules = self::UPDATE_RULES;
+        $rules['title'] = $rules['title'].$postDto->id;
+
+
         // dd(
         //     array_diff_key(
         //         $postDto->toArray(), 
@@ -152,7 +156,7 @@ class Post extends Model implements PostConstants
         // Validate the data here
         Utils::validateOrThrow(
             array_diff_key(
-                self::UPDATE_RULES, 
+                $rules, 
                 [
                     'image' => '',
                     'tags' => ''
@@ -174,7 +178,7 @@ class Post extends Model implements PostConstants
         // 2. Update
         $post = null;
         DB::transaction(function () use($postDto, &$post) {
-            
+
             // dd(
             //     array_diff_key(
             //         $postDto->toArray(),
@@ -212,6 +216,11 @@ class Post extends Model implements PostConstants
     public static function getCreateValidationRules()
     {
         return self::CREATE_RULES;
+    }
+
+    public static function getUpdateValidationRules()
+    {
+        return self::UPDATE_RULES;
     }
 
 

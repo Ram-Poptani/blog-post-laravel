@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Posts;
 
+use App\Post;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePostRequest extends FormRequest
@@ -23,13 +24,8 @@ class UpdatePostRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'title'=>'required|unique:posts,title,'.$this->post->id,
-            'excerpt'=>'required|max:255',
-            'content'=>'required',
-            'image'=>'image|mimes:jpeg,png,gif,svg,jpg|max:1024',
-            'category_id'=>'exists:categories,id',
-            'tags' => 'required',
-        ];
+        $rules = Post::getUpdateValidationRules();
+        $rules['title'] = $rules['title'].$this->post->id;
+        return $rules;
     }
 }
