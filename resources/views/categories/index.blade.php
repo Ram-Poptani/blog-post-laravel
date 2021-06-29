@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+{{-- {{ dd($categories[1]) }} --}}
 @section('content')
     <div class="d-flex justify-content-end mb-3">
         <a href="{{ route('categories.create') }}" class="btn btn-primary">Add Category</a>
@@ -21,7 +22,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm" onclick="displayModalForm({{ $category }})" data-toggle="modal" data-target="#deleteModal">Delete</a>
+                                <a href="#" class="btn btn-danger btn-sm" onclick="displayModalForm({{ $category->id }})" data-toggle="modal" data-target="#deleteModal">Delete</a>
                             </td>
                         </tr>
                     @endforeach
@@ -62,8 +63,8 @@
 
 @section('page-level-scripts')
     <script type="text/javascript">
-        function displayModalForm($category){
-            var url = '/categories/' + $category.id;
+        function displayModalForm($id){
+            var url = '/categories/' + $id;
             $("#deleteForm").attr('action', url);
         }
     </script>

@@ -31,6 +31,12 @@ class CategoriesController extends Controller
     public function index()
     {
         $categories = Category::all();
+
+        $categoryDtoCollection = $this->categoryService->makeCategoryDtoCollection($categories);
+
+        $categories = $categoryDtoCollection;
+
+        // dd($categories);
         return view('categories.index', compact([
             'categories'
         ]));

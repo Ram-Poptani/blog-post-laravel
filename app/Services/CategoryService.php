@@ -20,6 +20,27 @@ class CategoryService
     }
 
 
+    public function getCategories()
+    {
+        return Category::all();
+    }
+
+    public function makeCategoryDto($category)
+    {
+        return new CategoryDto($category->id, $category->name);
+
+    }
+
+    public function makeCategoryDtoCollection($categories)
+    {
+        $categoryDtoCollection = collect();
+        foreach ($categories as $category) {
+            $categoryDtoCollection->push($this->makeCategoryDto($category));
+        }
+        return $categoryDtoCollection;
+    }
+
+
 
     public function update(CategoryDto $categoryDto)
     {

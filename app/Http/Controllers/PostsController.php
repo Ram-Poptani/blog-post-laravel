@@ -43,9 +43,9 @@ class PostsController extends Controller
     public function index()
     {
         if (!auth()->user()->isAdmin()) {
-            $posts = $this->postService->currentUserPosts(false)->paginate(5);
+            $posts = $this->postService->currentUserPosts(false);
         }else {
-            $posts = $this->postService->getPosts()->paginate(5);
+            $posts = $this->postService->getPosts();
         }
         
         // $postDtoCollection = $this->postService->makeDtoCollection($posts);

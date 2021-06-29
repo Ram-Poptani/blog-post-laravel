@@ -33,19 +33,19 @@ class PostService
     public function getPosts($trashed = true)
     {
         if ($trashed) {
-            return Post::all();
+            return Post::paginate(5);
         }
 
-        return Post::withoutTrashed();
+        return Post::withoutTrashed()->paginate(5);
     }
 
     public function currentUserPosts($trashed = true)
     {
         if ($trashed) {
-            return Post::all()->where('user_id', auth()->id());
+            return Post::all()->where('user_id', auth()->id())->paginate(5);
         }
 
-        return Post::withoutTrashed()->where('user_id', auth()->id());
+        return Post::withoutTrashed()->where('user_id', auth()->id())->paginate(5);
     }
 
     public function updateImage(PostDto $postDto, $image)
