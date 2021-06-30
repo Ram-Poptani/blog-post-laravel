@@ -26,6 +26,9 @@ class TagsController extends Controller
     public function index()
     {
         $tags = Tag::all();
+
+        $tagDtoCollection = $this->tagService->makeTagDtoCollection($tags);
+        $tags = $tagDtoCollection;
         
         return view('tags.index', compact([
             'tags'

@@ -17,6 +17,27 @@ class TagService
         Tag::persistTag($tagDto);
     }
 
+    public function getTags()
+    {
+        return Tag::all();
+    }
+
+    public function makeTagDto(Tag $tag)
+    {
+        $tagDto = new TagDto($tag->id, $tag->name);
+        $tagDto->post_count = $tag->posts->count();
+        return $tagDto;
+    }
+
+    public function makeTagDtoCollection($tags)
+    {
+        $tagDtoCollection = collect();
+        foreach ($tags as $tag) {
+            $tagDtoCollection->push($this->makeTagDto($tag));
+        }
+        return $tagDtoCollection;
+    }
+
 
     public function update(TagDto $tagDto)
     {
