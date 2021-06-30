@@ -52,8 +52,12 @@ class PostsController extends Controller
 
         $posts = $postDtoCollection;
 
+        $posts_count = $this->postService->getPostsCount();
+        // dd($posts_count);
+
         return view('posts.index', compact([
-            'posts'
+            'posts',
+            'posts_count'
         ]));
     }
 

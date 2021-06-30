@@ -39,6 +39,11 @@ class PostService
         return Post::withoutTrashed()->paginate(5);
     }
 
+    public function getPostsCount()
+    {
+        return Post::all()->count();
+    }
+
     public function currentUserPosts($trashed = true)
     {
         if ($trashed) {

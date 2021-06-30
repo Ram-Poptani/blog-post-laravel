@@ -43,6 +43,16 @@
         </div>
         <div class="card-footer">
             {{-- {{ $posts->links() }} --}}
+
+            <div class="">
+                
+                <a href="?page={{ request('page') -1 }}" class="btn"><<</a>
+                @for ($i = 1; $i < ($posts_count/5 + 1); $i++)
+                    <a class="btn" href="?page={{ $i }}" role="button">{{ $i }}</a>
+                @endfor
+                <a href="?page={{ request('page') +1 }}" class="btn">>></a>
+            </div>
+
         </div>
     </div>
 
