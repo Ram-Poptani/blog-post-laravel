@@ -27,11 +27,11 @@
                             <td><img src="{{ asset('storage/'.$post->image) }}" alt="Post Image" width="128"></td>
                             <td>{{ $post->title }}</td>
                             <td>{{ $post->excerpt }}</td>
-                            <td>{{ $post->category->name }}</td>
-                            <td>{{ $post->author->name }}</td>
+                            <td>{{ $post->categoryDto->name }}</td>
+                            <td>{{ $post->author_name }}</td>
                             <td>
                                 <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm" onclick= "displayModalForm({{ $post }})"  data-toggle="modal" data-target="#deleteModal">Trash</a>
+                                <a href="#" class="btn btn-danger btn-sm" onclick= "displayModalForm({{ $post->id }})"  data-toggle="modal" data-target="#deleteModal">Trash</a>
                             </td>
                         </tr>
                     @endforeach
@@ -42,7 +42,7 @@
         @endif
         </div>
         <div class="card-footer">
-            {{ $posts->links() }}
+            {{-- {{ $posts->links() }} --}}
         </div>
     </div>
 
@@ -77,8 +77,8 @@
 
 @section('page-level-scripts')
     <script type="text/javascript">
-        function displayModalForm($post){
-            var url = '/trash/' + $post.id;
+        function displayModalForm($id){
+            var url = '/trash/' + $id;
             $("#deleteForm").attr('action', url);
         }
     </script>

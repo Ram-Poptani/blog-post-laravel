@@ -20,7 +20,7 @@
                         <tr>
                             <td>{{$tag->name}}</td>
                             <td>{{$tag->posts->count()}}</td>
-                            <td><a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-primary btn-sm">Edit</a><a href="" class="btn btn-danger btn-sm" onclick="displayModalForm({{$tag}})" data-toggle="modal" data-target="#deleteModal">Delete</a></td>
+                            <td><a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-primary btn-sm">Edit</a><a href="" class="btn btn-danger btn-sm" onclick="displayModalForm({{$tag->id}})" data-toggle="modal" data-target="#deleteModal">Delete</a></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -56,8 +56,8 @@
 @section('page-level-scripts')
 
     <script>
-        function displayModalForm($tag) {
-            var url = "/tags/"+$tag.id;
+        function displayModalForm($id) {
+            var url = "/tags/"+$id;
             $("#deleteForm").attr('action', url);
         }
     </script>

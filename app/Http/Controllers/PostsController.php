@@ -48,9 +48,9 @@ class PostsController extends Controller
             $posts = $this->postService->getPosts();
         }
         
-        // $postDtoCollection = $this->postService->makeDtoCollection($posts);
+        $postDtoCollection = $this->postService->makeDtoCollection($posts);
 
-        // $posts = $postDtoCollection;
+        $posts = $postDtoCollection;
 
         return view('posts.index', compact([
             'posts'

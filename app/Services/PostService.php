@@ -85,6 +85,8 @@ class PostService
             $post->published_at ?? now()
         );
 
+        $postDto->author_name = $post->author->name;
+
         return $postDto;
     }
 
