@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Caster\TagCollectionCaster;
 use App\Category;
 use App\DTO\CategoryDto;
 use App\DTO\PostDto;
@@ -42,22 +43,10 @@ class PostsController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->isAdmin()) {
-            $posts = $this->postService->currentUserPosts(false);
-        }else {
-            $posts = $this->postService->getPosts();
-        }
-        
-        $postDtoCollection = $this->postService->makeDtoCollection($posts);
-
-        $posts = $postDtoCollection;
-
-        $posts_count = $this->postService->getPostsCount();
-        // dd($posts_count);
+        $posts = $this->postService->index();
 
         return view('posts.index', compact([
             'posts',
-            'posts_count'
         ]));
     }
 
@@ -89,35 +78,49 @@ class PostsController extends Controller
     public function store(CreatePostRequest $request)
     {
         
-        $image = $request->file('image')->store('posts');
+        // TODO: file storing in model
+        // $image = $request->file('image')->store('posts');
 
-        $tagDtoCollection = collect();
-        foreach ($request->get('tags') as $tag) {
-            $tagDto = new TagDto($tag, Tag::findOrFail($tag)->name);
-            $tagDtoCollection->push($tagDto);
-        }
+        $tags = [];
+        $tags = array_map(
+            function ($tag) use($tags) {
+                $temp['id'] = $tag;
+                // dd($temp);
+                return $tags[] = $temp;
+            }, 
+            $request->get('tags')
+        );
+        // dd($tags);
+        $tagDtoCollection = (new TagCollectionCaster())->cast($tags);
+        // dd($tagDtoCollection);
 
 
         $category_id = $request->get('category_id');
         $category = Category::findOrFail($category_id);
-        $categoryDto = new CategoryDto($category_id, $category->name);
+        $categoryDto = new CategoryDto([
+            'id' => $category_id, 
+            'name' => $category->name
+        ]);
+        // dd($categoryDto);
 
-        $postDto = new PostDto(
-            null,
-            auth()->user()->id,
-            $request->get('title'),
-            $request->get('excerpt'),
-            $request->get('content'),
-            $image,
-            $categoryDto,
-            $tagDtoCollection,
-            $request->get('published_at')??now()
-        );
+        $postDto = new PostDto([
+            'id' => null,
+            'user_id' => auth()->user()->id,
+            'title' => $request->get('title'),
+            'excerpt' => $request->get('excerpt'),
+            'content' => $request->get('content'),
+            'category' => $categoryDto,
+            'tags' => $tagDtoCollection,
+            'published_at' => $request->get('published_at')??now(),
+            'imageFile' => $request->file('image') ?? null
+        ]);
+
 
         try {
             $this->postService->create($postDto);
         }catch(Exception $e) {
             session()->flash('error', 'Errr, Some error while adding Post :/');
+            session()->flash('error', $e->getMessage());
             return redirect(route('posts.index'));    
         }
 
@@ -128,43 +131,6 @@ class PostsController extends Controller
     }
     
 
-
-
-    /*
-
-    OLD STORE FUNCTION
-    
-    public function store1(Request $request)
-    {
-
-        dd(
-            $request->get('tags')
-        );
-
-        //Image Upload and stores the name of the image
-        $image = $request->file('image')->store('posts');
-        // run command: php artisan storage:link
-        //Create Post
-        $post = Post::create([
-            'user_id' => auth()->id(),
-            'title'=>$request->title,
-            'excerpt'=>$request->excerpt,
-            'content'=>$request->content,
-            'image'=>$image,
-            'published_at'=>$request->published_at,
-            'category_id'=>$request->category_id
-        ]);
-
-        $post->tags()->attach($request->tags);
-
-        //session storage
-
-        session()->flash('success', 'Post Created Successfully');
-        //redirect
-        return redirect(route('posts.index'));
-    }
-    
-    */
 
     /**
      * Display the specified resource.
@@ -203,42 +169,47 @@ class PostsController extends Controller
 
     public function update(UpdatePostRequest $request, Post $post)
     {
-        // dd($request->all());
 
+        // dd($request->tags);
 
-        $tagDtoCollection = collect();
-        foreach ($request->get('tags') as $tag) {
-            $tagDto = new TagDto($tag, Tag::findOrFail($tag)->name);
-            $tagDtoCollection->push($tagDto);
-        }
+        $tags = [];
+        $tags = array_map(
+            function ($tag) use($tags) {
+                $temp['id'] = $tag;
+                return $tags[] = $temp;
+            }, 
+            $request->get('tags')
+        );
+        // dd($tags);
+        $tagDtoCollection = (new TagCollectionCaster())->cast($tags);
 
 
         $category_id = $request->get('category_id');
         $category = Category::findOrFail($category_id);
-        $categoryDto = new CategoryDto($category_id, $category->name);
+        $categoryDto = new CategoryDto([
+            'id' => $category_id, 
+            'name' => $category->name
+        ]);
+
+        // dd($categoryDto);
 
 
-
-        $postDto = new PostDto(
-            $post->id,
-            auth()->user()->id,
-            $request->title,
-            $request->excerpt,
-            $request->content,
-            $post->image,
-            $categoryDto,
-            $tagDtoCollection,
-            $request->published_at
-        );
-
-        if($request->hasFile('image')){
-            // dd('image is gonna update!!');
-            $postDto = $this->postService->updateImage($postDto, $request->image);
-        }
+        $postDto = new PostDto([
+            'id' => $post->id,
+            'user_id' => auth()->user()->id,
+            'title' => $request->title,
+            'excerpt' => $request->excerpt,
+            'content' => $request->content,
+            'image' => $post->image,
+            'imageFile' => $request->image ?? null,
+            'category' => $categoryDto,
+            'tags' => $tagDtoCollection,
+            'published_at' => $request->published_at
+        ]);
 
 
         try {
-            $this->postService->update($postDto);
+            $this->postService->update($postDto, $post);
         }catch(Exception $e) {
             session()->flash('error', 'Errr, Some error while updating Post :/');
             // session()->flash('error', $e->getMessage());

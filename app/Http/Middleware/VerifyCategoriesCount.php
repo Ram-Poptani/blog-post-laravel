@@ -23,6 +23,7 @@ class VerifyCategoriesCount
              */
             if ( Category::count() === 0 ) {
             session()->flash('error', 'Minimum one category must exist to create a post');
+            // session()->flash('error', $e->getMessage());
             return redirect(route('categories.create'));
         }
         return $next($request);

@@ -43,7 +43,10 @@ class TagsController extends Controller
     public function store(CreateTagRequest $request)
     {
 
-        $tagDto = new TagDto(null, $request->name);
+        $tagDto = new TagDto([
+            'id' => null, 
+            'name' => $request->name,
+        ]);
 
         try {
             $this->tagService->create($tagDto);
@@ -70,6 +73,7 @@ class TagsController extends Controller
     {
         if ( $tag->posts->count() > 0 ) {
             session()->flash('error', 'Tag cannnot be deleted as it is associated with some post!');
+            // session()->flash('error', $e->getMessage());
             return redirect()->back();
         }
         $tag->delete();
@@ -90,7 +94,10 @@ class TagsController extends Controller
         // dd($tag);
 
 
-        $tagDto = new TagDto($tag->id, $request->name);
+        $tagDto = new TagDto([
+            'id' => $tag->id, 
+            'name' => $request->name,
+        ]);
 
 
 
@@ -98,6 +105,7 @@ class TagsController extends Controller
             $this->tagService->update($tagDto);
         }catch(Exception $e) {
             session()->flash('error', 'Errr, Some error while updating Tag :/');
+            // session()->flash('error', $e->getMessage());
             return redirect(route('tags.index'));    
         }
 

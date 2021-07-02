@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end mb-3">
         <a href="{{ route('tags.create')}}" class="btn btn-primary">Add Tag</a>
     </div>
     <div class="card">
@@ -19,7 +19,7 @@
                     @foreach ($tags as $tag)
                         <tr>
                             <td>{{$tag->name}}</td>
-                            <td>{{$tag->post_count}}</td>
+                            <td>{{$tag->getPostCount()}}</td>
                             <td><a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-primary btn-sm">Edit</a><a href="" class="btn btn-danger btn-sm" onclick="displayModalForm({{$tag->id}})" data-toggle="modal" data-target="#deleteModal">Delete</a></td>
                         </tr>
                     @endforeach

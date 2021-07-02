@@ -61,12 +61,16 @@ class CategoriesController extends Controller
     public function store(CreateCategoryRequest $request)
     {
 
-        $categoryDto = new CategoryDto(null, $request->name);
+        $categoryDto = new CategoryDto([
+            'id' => null, 
+            'name' => $request->name
+        ]);
 
         try {
             $this->categoryService->create($categoryDto);
         }catch(Exception $e) {
             session()->flash('error', 'Errr, Some error while adding Category :/');
+            // session()->flash('error', $e->getMessage());
             return redirect(route('categories.index'));    
         }
 
@@ -110,7 +114,10 @@ class CategoriesController extends Controller
     public function update(UpdateCategoryRequest $request, Category $category)
     {
 
-        $categoryDto = new CategoryDto($category->id, $request->name);
+        $categoryDto = new CategoryDto([
+                'id' => $category->id, 
+                'name' => $request->name
+        ]);
 
 
 
@@ -118,6 +125,7 @@ class CategoriesController extends Controller
             $this->categoryService->update($categoryDto);
         }catch(Exception $e) {
             session()->flash('error', 'Errr, Some error while updating Category :/');
+            // session()->flash('error', $e->getMessage());
             return redirect(route('categories.index'));    
         }
 
@@ -142,6 +150,7 @@ class CategoriesController extends Controller
     {
         if ( $category->posts->count() > 0 ) {
             session()->flash('error', 'Category cannnot be deleted as it is associated with some post!');
+            // session()->flash('error', $e->getMessage());
             return redirect()->back();
         }
         $category->delete();

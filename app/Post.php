@@ -64,6 +64,12 @@ class Post extends Model implements PostConstants
     }
 
 
+    public function getAuthorNameAttribute()
+    {
+        return $this->author->name;
+    }
+
+
     /**
      * QUERY SCOPES
      */
@@ -88,8 +94,11 @@ class Post extends Model implements PostConstants
      * Persisting a Post using DTO
      */
 
-    public static function persistPost(PostDto $postDto):self
+    public static function persistPost(PostDto $postDto):Post
     {
+
+        // Storing Image
+        $postDto->image = $postDto->imageFile->store('posts');
 
         // dd($postDto->toArray());
 
@@ -120,9 +129,21 @@ class Post extends Model implements PostConstants
         DB::transaction(function () use($postDto, &$post) {
 
             // dd($postDto->toArray());
+            // $postArray = $postDto->toArray();
+            $postArray = $postDto->except('tags', 'category')->toArray();
+            $postArray['category_id'] = $postDto->getCategoryId();
 
-            $post = Post::create(array_diff_key($postDto->toArray(), ['tag_ids' => '']));
-            $post->tags()->attach($postDto->toArray()['tag_ids']);
+            // dd($postArray);
+
+
+
+            $post = Post::create(
+                array_diff_key($postArray, [
+                    'tag_ids' => '',
+                ])
+            );
+            $post->tags()->attach($postDto->getTagIds());
+            // dd($post);
 
         });
         // dd($post);
@@ -133,8 +154,14 @@ class Post extends Model implements PostConstants
     }
 
 
-    public static function updatePost(PostDto $postDto):self
+    public function updatePost(PostDto $postDto):self    
     {
+
+        if ($postDto->imageFile) {
+            $image = $postDto->imageFile->store('posts');
+            $this->deleteImage();
+            $postDto->image = $image;
+        }
 
         $rules = self::UPDATE_RULES;
         $rules['title'] = $rules['title'].$postDto->id;
@@ -150,6 +177,8 @@ class Post extends Model implements PostConstants
         //         ]
         //     )
         // );
+
+        
 
 
         // 1. Validate
@@ -176,8 +205,7 @@ class Post extends Model implements PostConstants
 
         
         // 2. Update
-        $post = null;
-        DB::transaction(function () use($postDto, &$post) {
+        DB::transaction(function () use($postDto) {
 
             // dd(
             //     array_diff_key(
@@ -189,29 +217,28 @@ class Post extends Model implements PostConstants
             //     )
             // );
 
-            $post = Post::findOrFail($postDto->id);
-            $post->update(
+            $postArray = $postDto->toArray();
+            $postArray['category_id'] = $postDto->category->id . '';
+            // dd($postArray);
+        
+            $this->update(
                 array_diff_key(
-                    $postDto->toArray(),
+                    $postArray,
                     [
                         'user_id' => '',
                         'tag_ids' => '',
                     ]
                 )
             );
-            $post->tags()->sync($postDto->toArray()['tag_ids']);
+            $this->tags()->sync($postDto->getTagIds());
             
 
         });
-        // dd($post);
-        return $post;
+        // dd($this);
+        return $this;
 
 
     }
-
-
-
-
 
     public static function getCreateValidationRules()
     {

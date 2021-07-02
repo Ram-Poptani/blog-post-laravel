@@ -5,9 +5,11 @@ namespace App\Services;
 
 use App\Category;
 use App\DTO\CategoryDto;
+use App\Caster\CategoryCollectionCaster;
 
 class CategoryService
 {
+    
     public function create(CategoryDto $categoryDto)
     {
 
@@ -25,19 +27,24 @@ class CategoryService
         return Category::all();
     }
 
-    public function makeCategoryDto($category)
-    {
-        return new CategoryDto($category->id, $category->name);
-
-    }
+    // public function makeCategoryDto($category)
+    // {
+    //     return new CategoryDto([
+    //         'id' => $category->id, 
+    //         'name' => $category->name
+    //     ]);
+    // }
 
     public function makeCategoryDtoCollection($categories)
     {
-        $categoryDtoCollection = collect();
-        foreach ($categories as $category) {
-            $categoryDtoCollection->push($this->makeCategoryDto($category));
-        }
-        return $categoryDtoCollection;
+        // $categoryDtoCollection = collect();
+        // foreach ($categories as $category) {
+        //     $categoryDtoCollection->push($this->makeCategoryDto($category));
+        // }
+        // return $categoryDtoCollection;
+
+        $categoriesCollectionCaster = (new CategoryCollectionCaster())->cast($categories);
+        return $categoriesCollectionCaster;
     }
 
 

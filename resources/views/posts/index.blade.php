@@ -27,11 +27,16 @@
                             <td><img src="{{ asset('storage/'.$post->image) }}" alt="Post Image" width="128"></td>
                             <td>{{ $post->title }}</td>
                             <td>{{ $post->excerpt }}</td>
-                            <td>{{ $post->categoryDto->name }}</td>
-                            <td>{{ $post->author_name }}</td>
+                            <td>{{ $post->category->name }}</td>
+                            <td>{{ $post->getAuthorName() }}</td>
                             <td>
-                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm" onclick= "displayModalForm({{ $post->id }})"  data-toggle="modal" data-target="#deleteModal">Trash</a>
+                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-pen  fa-lg  "></i>
+                                </a>
+
+                                <a href="#" class="btn btn-danger btn-sm" onclick= "displayModalForm({{ $post->id }})"  data-toggle="modal" data-target="#deleteModal">
+                                    <i class="fas fa-trash-alt  fa-lg  "></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach
@@ -44,14 +49,15 @@
         <div class="card-footer">
             {{-- {{ $posts->links() }} --}}
 
-            <div class="">
+
+            {{-- <div class="">
                 
                 <a href="?page={{ request('page') -1 }}" class="btn"><<</a>
                 @for ($i = 1; $i < ($posts_count/5 + 1); $i++)
                     <a class="btn" href="?page={{ $i }}" role="button">{{ $i }}</a>
                 @endfor
                 <a href="?page={{ request('page') +1 }}" class="btn">>></a>
-            </div>
+            </div> --}}
 
         </div>
     </div>

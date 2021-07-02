@@ -19,6 +19,14 @@ class Tag extends Model implements TagConstants
     }
 
 
+
+    public function getPostCountAttribute()
+    {
+        return $this->posts->count();
+    }
+
+
+
     public static function persistTag(TagDto $tagDto):self
     {
 

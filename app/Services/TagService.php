@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Caster\TagCollectionCaster;
 use App\DTO\TagDto;
 use App\Tag;
 
@@ -24,18 +25,23 @@ class TagService
 
     public function makeTagDto(Tag $tag)
     {
-        $tagDto = new TagDto($tag->id, $tag->name);
-        $tagDto->post_count = $tag->posts->count();
+        $tagDto = new TagDto([
+            'id' => $tag->id, 
+            'name' => $tag->name
+        ]);
         return $tagDto;
     }
 
     public function makeTagDtoCollection($tags)
     {
-        $tagDtoCollection = collect();
-        foreach ($tags as $tag) {
-            $tagDtoCollection->push($this->makeTagDto($tag));
-        }
-        return $tagDtoCollection;
+        // $tagDtoCollection = collect();
+        // foreach ($tags as $tag) {
+        //     $tagDtoCollection->push($this->makeTagDto($tag));
+        // }
+        // return $tagDtoCollection;
+
+        $tagsCollectionCaster = (new TagCollectionCaster())->cast($tags->toArray());
+        return $tagsCollectionCaster;
     }
 
 
